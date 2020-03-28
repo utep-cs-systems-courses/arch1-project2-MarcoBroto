@@ -10,7 +10,22 @@ AS              = msp430-elf-gcc -mmcu=${CPU} -c
 
 all:
 	(cd ../timerLib; make install)
+
+toy.elf:
+	${COMMON_OBJECTS} toy.o switches.o led.o buzzer.o ../lib/lTimer.a
+	${CC} ${CFLAGS} ${LDFLAGS} -o $@ $^ 
+
+led.o: led.h led.c
+
+switches.o: switches.h switches.c
+
+buzzer.o: buzzer.h buzzer.c
+
+all:
 	toy.elf
+
+load: toy.elf
+	mspdebug rf2500 "prog $^"
 
 # doc:
 # 	rm -rf doxygen_docs
@@ -21,9 +36,3 @@ clean:
 	rm -rf lib h
 	rm -rf doxygen_docs/*
 	rm -rf doxygen_docs/*rm -f *.o *.elf
-
-toy.elf: ${COMMON_OBJECTS} toy.o wdt_handler.o
-	${CC} ${CFLAGS} ${LDFLAGS} -o $@ $^ -lTimer -lLcd -lShape -lCircle -lp2sw
-
-load: toy.elf
-	mspdebug rf2500 "prog $^"
