@@ -1,42 +1,51 @@
 #include <msp430.h>
-#include "timer.h"
+#include "libTimer.h"
 #include "switches.h"
 #include "led.h"
 #include "buzzer.h"
 
 
-void stateAdvance() {
-	static enum {A=0, B=1, C=2, D=3} state = A;
-	static char sound_ind = 0;
-	static int sounds[10];
+static enum {S1=0, S2=1, S3=2, S4=3} state = S1;
+static char sound_ind = 0;
+static int sounds[4][10] = {
+  {10000, 6000, 0},
+  {8000, 6000, 0},
+  {4000, 8000, 0},
+  {8000, 8000, 8000, 4000, 8000, 8000, 4000, 6000, 0}
+};
+
+
+void static stateAdvance() {
+  //static enum {A=0, B=1, C=2, D=3} state = A;
+  //static char sound_ind = 0;
+  //static int sounds[10];
 
 	switch (state) {
-		case A: // Play low two-tone sound byte, red on, green off
-			red_on = 1;
-			sounds = {10000, 6000, 0};
-			state = B;
+		case S1: // Play low two-tone sound byte, red on, green off
+			red_on = led_changed = 0;
+			state = S2;
 			break;
-		case B: // Play higher two-tone sound byte, red off, green on
-			red_on = 0; green_on = 1;
-			sounds = {8000, 6000, 0};
-			state = C;
+		case S2: // Play higher two-tone sound byte, red off, green on
+		  red_on = 0; green_on = 1; led_changed = 1;
+			state = S3;
 			break;
-		case C: // Play highest two-tone sound byte, red on, green on
-			red_on = 1;
-			sounds = {4000, 8000, 0};
-			state = D;
+		case S3: // Play highest two-tone sound byte, red on, green on
+		  red_on = led_changed = 1;
+			state = S4;
 			break;
+	        case S4:
+		  red_on = led_changed = 1;
 		default: // Play win sound, reset to first state
-			sounds = {8000, 8000, 8000, 4000, 8000, 8000, 4000, 6000, 8000, 0};
-			state = A;
+		  red_on = 0; green_on = led_changed = 1;
+		  state = S1;
 			break;
 	}
 	led_update();
 }
 
 
-void soundStateAdvance() {
-
+static void soundStateAdvance() {
+  buzzer_set_period(sounds[state][sound_ind++]);
 }
 
 
@@ -52,8 +61,9 @@ void __interrupt_vec(PORT1_VECTOR) Port_1() {   /* Switch on P1 (S2) */
 void __interrupt_vec(WDT_VECTOR) WDT() { // 250 interrupts/sec
 	static char blink_count = 0;
 	if (++blink_count == 125) { // Every 0.5 second
-		buzzer_set_period(sounds[sound_ind++]);
-		blink_count = 0;
+	  //buzzer_set_period(sounds[sound_ind++]);
+	  soundStateAdvance();
+	  blink_count = 0;
 	}
 }
 
@@ -63,6 +73,7 @@ int main() {
 	buzzer_set_period(0);
 	led_init();
 	switch_init();
+	//enableWDTInterrupts();
 	or_sr(0x18);
 	return 0;
 }
