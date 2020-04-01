@@ -12,7 +12,7 @@ static char switch_update_interrupt_sense() {
 }
 
 void switch_init() {
-  P1REN |= SWITCHES;		// enables resistors for switches
+	P1REN |= SWITCHES;		// enables resistors for switches
 	P1IE |= SWITCHES;		// enable interrupts from switches
 	P1OUT |= SWITCHES;		// pull-ups for switches
 	P1DIR &= ~SWITCHES;		// set switches' bits for input
