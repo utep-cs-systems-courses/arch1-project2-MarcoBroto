@@ -29,6 +29,6 @@ load: toy.elf
 
 clean:
 	(cd ../timerLib; make clean)
-	rm -rf lib h
+	rm -rf ../lib ../h lib h
 	rm -rf doxygen_docs/*
 	rm -rf doxygen_docs/*rm -f *.o *.elf
