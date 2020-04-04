@@ -7,7 +7,7 @@ LDFLAGS		= -L../lib -L/opt/ti/msp430_gcc/include/
 CC              = msp430-elf-gcc
 AS              = msp430-elf-gcc -mmcu=${CPU} -c
 
-toy.elf: ${COMMON_OBJECTS} toy.o led.o switches.o buzzer.o ../lib/libTimer.a
+toy.elf: ${COMMON_OBJECTS} toyMain.o led.o switches.o buzzer.o ../lib/libTimer.a
 	${CC} ${CFLAGS} ${LDFLAGS} -o $@ $^ 
 
 led.o: led.h led.c
