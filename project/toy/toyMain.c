@@ -55,8 +55,8 @@ void __interrupt_vec(PORT1_VECTOR) Port_1() {   // Switch on P1 (S2)
 	if (P1IFG & SWITCHES) {	      // did a button cause this interrupt?
 		P1IFG &= ~SWITCHES; // clear pending sw interrupts
 		switch_interrupt_handler();
-		pressed = ~switch_state_down & switch_state_changed; // Store switch press value
-		if (pressed) { // Only register press if switch was in off state
+		p1val = ~switch_state_down; // Store switch press value
+		if (p1val & (p1val ^ prev_p1val)) { // Only register press if switch was in off state
 			state = (state > S5 || state < S1) ? S1 : state+1;
 			sound_ind = 0; // Reset sound frequency state index
 			stateAdvance();
