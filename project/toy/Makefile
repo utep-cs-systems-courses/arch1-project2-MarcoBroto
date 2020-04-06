@@ -19,9 +19,7 @@ buzzer.o: buzzer.h buzzer.c
 toy.elf: toyMain.o led.o switches.o buzzer.o ../lib/libTimer.a
 	${CC} ${CFLAGS} ${LDFLAGS} -o $@ $^
 
-all:
-	#(cd ../timerLib; make install)
-	toy.elf
+all: toy.elf
 
 load: toy.elf
 	mspdebug rf2500 "prog $^"

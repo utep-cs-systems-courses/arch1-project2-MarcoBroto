@@ -69,7 +69,7 @@ void __interrupt_vec(PORT1_VECTOR) Port_1() {   // Switch on P1 (S2)
 void __interrupt_vec(WDT_VECTOR) WDT() { // 250 interrupts/sec
 	static char timerCount = 0;
 	if (timerCount % 50 == 0) {
-		if (state == S5) stateAdvance(); // Used for flashing state
+		stateAdvance();
 		soundStateAdvance();
 	}
 	timerCount = (timerCount >= 250) ? 0 : timerCount+1;
