@@ -7,8 +7,8 @@ LDFLAGS		= -L../lib -L/opt/ti/msp430_gcc/include/
 CC              = msp430-elf-gcc
 AS              = msp430-elf-gcc -mmcu=${CPU} -c
 
-toy.elf: ${COMMON_OBJECTS} toyMain.o led.o switches.o buzzer.o ../lib/libTimer.a
-	${CC} ${CFLAGS} ${LDFLAGS} -o $@ $^ 
+install:
+	(cd ../timerLib; make install)
 
 led.o: led.h led.c
 
@@ -16,8 +16,11 @@ switches.o: switches.h switches.c
 
 buzzer.o: buzzer.h buzzer.c
 
+toy.elf: toyMain.o led.o switches.o buzzer.o ../lib/libTimer.a
+	${CC} ${CFLAGS} ${LDFLAGS} -o $@ $^
+
 all:
-	(cd ../timerLib; make install)
+	#(cd ../timerLib; make install)
 	toy.elf
 
 load: toy.elf
